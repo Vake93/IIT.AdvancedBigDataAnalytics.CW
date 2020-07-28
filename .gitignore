@@ -351,3 +351,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+Dataset/Electronics_Metadata.json
+Dataset/Electronics_Metadata_Dev.json
+Dataset/Electronics_Review.json
+Dataset/Electronics_Review_Dev.json
