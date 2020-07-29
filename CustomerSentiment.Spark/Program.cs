@@ -1,8 +1,9 @@
-﻿using Microsoft.ML;
+﻿using CustomerSentiment.Spark.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 using Microsoft.Spark.Sql;
 using Microsoft.Spark.Sql.Types;
 using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.Spark.Sql.Functions;
@@ -11,37 +12,52 @@ namespace CustomerSentiment.Spark
 {
     public class Program
     {
+        const string _appName = nameof(CustomerSentiment);
+        const string _sentimentModelFile = "SentimentModel.zip";
+        const string _metadataPath = @"hdfs://localhost:9000/data/Electronics_Metadata.json";
+        const string _reviewsPath = @"hdfs://localhost:9000/data/Electronics_Reviews.json";
+        const string _connectionString = "Server=localhost;Database=customer-sentiment-db;User Id=postgres;Password=postgres;Application Name=CustomerSentiment;";
+
         private static readonly MLContext _mlContext = new MLContext();
         private static readonly ITransformer _mlModel = _mlContext
-                .Model
-                .Load(@"SentimentModel.zip", out var _);
+            .Model
+            .Load(_sentimentModelFile, out var _);
+
+        private static readonly DbContextOptions<CustomerSentimentContext> _contextOptions = new DbContextOptionsBuilder<CustomerSentimentContext>()
+                .UseNpgsql(_connectionString)
+                .Options;
 
         static void Main()
         {
-            const string appName = nameof(CustomerSentiment);
-            const string metadataPath = @"hdfs://localhost:9000/data/Electronics_Metadata.json";
-            const string reviewsPath = @"hdfs://localhost:9000/data/Electronics_Reviews.json";
+            using var context = new CustomerSentimentContext(_contextOptions);
+            context.Database.EnsureCreated();
 
             var spark = SparkSession
                 .Builder()
-                .AppName(appName)
+                .AppName(_appName)
                 .GetOrCreate();
 
             var start = DateTime.Now;
 
-            var dfMetadata = LoadMetadataFile(metadataPath, spark);
+            var dfMetadata = LoadMetadataFile(_metadataPath, spark);
             MetadataCleanup(dfMetadata);
 
-            var dfReviews = LoadReviewPathFile(reviewsPath, spark);
+            var dfReviews = LoadReviewPathFile(_reviewsPath, spark);
             ReviewsCleanup(dfReviews);
 
             ElectronicsReviewsSentimentAnalysis(spark);
 
-            AnalyseCategorySentiment(spark);
+            AnalyseCategorySentiment(spark, context);
 
-            AnalyseBrandSentiment(spark);
+            AnalyseBrandSentiment(spark, context);
+
+            AnalyseBrandSentimentVsTime(spark, context);
 
             AnalyseProductSentiment(spark);
+
+            AnalyseCategoryDemand(spark);
+
+            AnalyseBrandDemand(spark);
 
             var end = DateTime.Now;
             Console.WriteLine($"Time Elapsed : {(end - start).TotalSeconds} Seconds");
@@ -49,7 +65,7 @@ namespace CustomerSentiment.Spark
 
         private static DataFrame LoadMetadataFile(string metadataPath, SparkSession spark)
         {
-            Console.WriteLine("Loading JSON File");
+            Console.WriteLine("Loading Electronics_Metadata.json File");
 
             var metadataSchema = new StructType(new[]
             {
@@ -163,7 +179,7 @@ namespace CustomerSentiment.Spark
 
         private static DataFrame LoadReviewPathFile(string reviewPath, SparkSession spark)
         {
-            Console.WriteLine("Loading JSON File");
+            Console.WriteLine("Loading Electronics_Reviews.json File");
 
             var ratingSchema = new StructType(new[]
             {
@@ -208,7 +224,7 @@ namespace CustomerSentiment.Spark
             dataFrame = dataFrame
                 .WithColumnRenamed("reviewerID", "rid")
                 .WithColumnRenamed("reviewText", "review_text")
-                .WithColumnRenamed("unixReviewTime", "unixTime");
+                .WithColumnRenamed("unixReviewTime", "unix_time");
 
             dataFrame.Cache();
 
@@ -217,51 +233,6 @@ namespace CustomerSentiment.Spark
             Console.WriteLine($"Reviews Count: {dataFrame.Count()}");
             Console.WriteLine("Done");
             Console.WriteLine();
-        }
-
-        private static void CreateRatingDataset(SparkSession spark)
-        {
-            const string datasetFilePath = @"D:\Projects\IIT.AdvancedBigDataAnalytics.CW\Dataset\RatingSentiment.tsv";
-
-            Console.WriteLine("Creating Traning Dataset");
-            var reviews = spark.Sql(
-                "SELECT review_text, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS positive_review " +
-                "FROM ElectronicsRatings " +
-                "WHERE LENGTH(review_text) >= 5");
-
-            reviews.Cache();
-
-            var positiveReviews = reviews
-                .Filter(reviews["positive_review"] == 1)
-                .Take(500)
-                .ToArray();
-
-            var negativeReviews = reviews
-                .Filter(reviews["positive_review"] == 0)
-                .Take(500)
-                .ToArray();
-
-            if (File.Exists(datasetFilePath))
-            {
-                File.Delete(datasetFilePath);
-            }
-
-            using var writter = new StreamWriter(datasetFilePath);
-            writter.WriteLine("Text\tSentiment");
-
-            for (var i = 0; i < 500; i++)
-            {
-                var positiveReview = positiveReviews[i];
-                var negativeReview = negativeReviews[i];
-
-                var positiveReviewText = positiveReview.GetAs<string>(0);
-                var negativeReviewText = negativeReview.GetAs<string>(0);
-
-                writter.WriteLine($"{positiveReviewText}\t{positiveReview[1]}");
-                writter.WriteLine($"{negativeReviewText}\t{negativeReview[1]}");
-            }
-
-            Console.WriteLine("Done");
         }
 
         private static int Sentiment(string text)
@@ -280,14 +251,14 @@ namespace CustomerSentiment.Spark
         {
             spark.Udf().Register<string, int>("sentiment_udf", text => Sentiment(text));
 
-            var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(review_text) AS sentiment FROM ElectronicsReviews");
-            // var reviewsSentiment = spark.Sql("SELECT *, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS sentiment FROM ElectronicsReviews");
+            // var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(review_text) AS sentiment FROM ElectronicsReviews");
+            var reviewsSentiment = spark.Sql("SELECT *, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS sentiment FROM ElectronicsReviews");
 
             reviewsSentiment.Cache();
             reviewsSentiment.CreateOrReplaceTempView("ElectronicsReviewSentiment");
         }
 
-        private static void AnalyseCategorySentiment(SparkSession spark)
+        private static void AnalyseCategorySentiment(SparkSession spark, CustomerSentimentContext context)
         {
             Console.WriteLine("Analysing category consumer sentiment");
 
@@ -300,28 +271,31 @@ namespace CustomerSentiment.Spark
             itemCategorySentiment.Cache();
             itemCategorySentiment.CreateOrReplaceTempView("ItemCategorySentiment");
 
-            Console.WriteLine("Analysing top 20 categories with best consumer sentiment.");
+            Console.WriteLine("Analysing categories with best consumer sentiment.");
 
-            var bestCategorySentiment = spark.Sql(
+            var categorySentiment = spark.Sql(
                 "SELECT * " +
                 "FROM ItemCategorySentiment " +
-                "ORDER BY sentiment_rank DESC, review_count DESC " +
-                "LIMIT 20");
+                "ORDER BY sentiment_rank DESC, review_count DESC");
 
-            bestCategorySentiment.Show();
+            categorySentiment.Show();
+            var categorySentimentItems = categorySentiment
+                .Collect()
+                .Select(r => new ItemCategorySentiment
+                {
+                    Id = Guid.NewGuid(),
+                    Category = r.GetAs<string>(0),
+                    SentimentRank = r.GetAs<double>(1),
+                    ReviewCount = r.GetAs<int>(2)
+                })
+                .ToArray();
 
-            Console.WriteLine("Analysing top 20 categories with worst consumer sentiment.");
+            context.ItemCategorySentiment.AddRange(categorySentimentItems);
 
-            var worstCategorySentiment = spark.Sql(
-                "SELECT * " +
-                "FROM ItemCategorySentiment " +
-                "ORDER BY sentiment_rank ASC, review_count DESC " +
-                "LIMIT 20");
-
-            worstCategorySentiment.Show();
+            context.SaveChanges();
         }
 
-        private static void AnalyseBrandSentiment(SparkSession spark)
+        private static void AnalyseBrandSentiment(SparkSession spark, CustomerSentimentContext context)
         {
             Console.WriteLine("Analysing brand consumer sentiment");
 
@@ -334,6 +308,20 @@ namespace CustomerSentiment.Spark
 
             brandSentiment.Cache();
             brandSentiment.CreateOrReplaceTempView("BrandSentiment");
+
+            var brandSentimentItems = brandSentiment
+                .Collect()
+                .Select(r => new BrandSentiment
+                {
+                    Id = Guid.NewGuid(),
+                    Brand = r.GetAs<string>(0),
+                    SentimentRank = r.GetAs<double>(1),
+                    ReviewCount = r.GetAs<int>(2)
+                })
+                .ToArray();
+
+            context.BrandSentiment.AddRange(brandSentimentItems);
+            context.SaveChanges();
 
             Console.WriteLine("Analysing top 20 most popular brands.");
 
@@ -374,6 +362,37 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             worstBrandSentiment.Show();
+        }
+
+        private static void AnalyseBrandSentimentVsTime(SparkSession spark, CustomerSentimentContext context)
+        {
+            Console.WriteLine("Analysing brand consumer sentiment");
+
+            var brandSentimentVsTime = spark.Sql(
+                "SELECT EM.brand, FROM_UNIXTIME(ERS.unix_time, 'YYYY') as year, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank " +
+                "FROM ElectronicsMetadata EM " +
+                "JOIN ElectronicsReviewSentiment ERS ON ERS.asin = EM.asin " +
+                "WHERE EM.brand LIKE 'Amazon%' " +
+                "GROUP BY EM.brand, FROM_UNIXTIME(ERS.unix_time, 'YYYY') " +
+                "ORDER BY FROM_UNIXTIME(ERS.unix_time, 'YYYY')");
+
+            brandSentimentVsTime.Cache();
+            brandSentimentVsTime.CreateOrReplaceTempView("BrandSentimentVsTime");
+            brandSentimentVsTime.Show();
+
+            var brandSentimentVsTimeItems = brandSentimentVsTime
+                .Collect()
+                .Select(r => new BrandSentimentVsTime
+                {
+                    Id = Guid.NewGuid(),
+                    Brand = r.GetAs<string>(0),
+                    Year = int.Parse(r.GetAs<string>(1)),
+                    SentimentRank = r.GetAs<double>(2)
+                })
+                .ToArray();
+
+            context.BrandSentimentVsTime.AddRange(brandSentimentVsTimeItems);
+            context.SaveChanges();
         }
 
         private static void AnalyseProductSentiment(SparkSession spark)
@@ -429,6 +448,71 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             worstproductSentiment.Show();
+        }
+
+        private static void AnalyseCategoryDemand(SparkSession spark)
+        {
+            Console.WriteLine("Analysing category consumer demand");
+
+            var categoriesDemand = spark.Sql(
+                "SELECT EM.main_cat, FROM_UNIXTIME(ER.unix_time, 'MM') as month, COUNT(1) as demand " +
+                "FROM ElectronicsReviews ER " +
+                "JOIN ElectronicsMetadata EM ON EM.asin = ER.asin " +
+                "GROUP BY EM.main_cat, from_unixtime(ER.unix_time, 'MM') " +
+                "ORDER BY EM.main_cat, FROM_UNIXTIME(ER.unix_time, 'MM')");
+
+            categoriesDemand.Cache();
+            categoriesDemand.CreateOrReplaceTempView("CategoryDemand");
+
+            var categories = spark.Sql("SELECT main_cat FROM CategoryDemand GROUP BY main_cat")
+                .Collect()
+                .Select(r => r.GetAs<string>(0))
+                .ToArray();
+
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"Analysing consumer demand for {category}");
+
+                var categoryDemand = spark.Sql(
+                    "SELECT * " +
+                    "FROM CategoryDemand " +
+                   $"WHERE main_cat = '{category}'");
+
+                categoryDemand.Show();
+            }
+        }
+
+        private static void AnalyseBrandDemand(SparkSession spark)
+        {
+            Console.WriteLine("Analysing first party brand consumer demand");
+
+            var brandsDemand = spark.Sql(
+                "SELECT EM.brand, FROM_UNIXTIME(ER.unix_time, 'MM') as month, COUNT(1) as demand " +
+                "FROM ElectronicsReviews ER " +
+                "JOIN ElectronicsMetadata EM ON EM.asin = ER.asin " +
+                "WHERE EM.brand LIKE 'Amazon%' " +
+                "GROUP BY EM.brand, from_unixtime(ER.unix_time, 'MM') " +
+                "ORDER BY EM.brand, FROM_UNIXTIME(ER.unix_time, 'MM')");
+
+            brandsDemand.Cache();
+            brandsDemand.CreateOrReplaceTempView("BrandsDemand");
+
+            var brands = spark.Sql("SELECT brand FROM BrandsDemand GROUP BY brand")
+                .Collect()
+                .Select(r => r.GetAs<string>(0))
+                .ToArray();
+
+            foreach (var brand in brands)
+            {
+                Console.WriteLine($"Analysing consumer demand for {brand}");
+
+                var brandDemand = spark.Sql(
+                    "SELECT * " +
+                    "FROM BrandsDemand " +
+                   $"WHERE brand = '{brand}'");
+
+                brandDemand.Show();
+            }
         }
     }
 }
