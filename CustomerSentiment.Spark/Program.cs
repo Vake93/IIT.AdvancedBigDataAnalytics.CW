@@ -22,7 +22,7 @@ namespace CustomerSentiment.Spark
             const string metadataPath = @"hdfs://localhost:9000/data/Electronics_Metadata.json";
             const string reviewsPath = @"hdfs://localhost:9000/data/Electronics_Reviews.json";
 
-            using var spark = SparkSession
+            var spark = SparkSession
                 .Builder()
                 .AppName(appName)
                 .GetOrCreate();
@@ -40,6 +40,8 @@ namespace CustomerSentiment.Spark
             AnalyseCategorySentiment(spark);
 
             AnalyseBrandSentiment(spark);
+
+            AnalyseProductSentiment(spark);
 
             var end = DateTime.Now;
             Console.WriteLine($"Time Elapsed : {(end - start).TotalSeconds} Seconds");
@@ -278,8 +280,8 @@ namespace CustomerSentiment.Spark
         {
             spark.Udf().Register<string, int>("sentiment_udf", text => Sentiment(text));
 
-            // var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(reviewText) AS sentiment FROM ElectronicsReviews");
-            var reviewsSentiment = spark.Sql("SELECT *, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS sentiment FROM ElectronicsReviews");
+            var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(review_text) AS sentiment FROM ElectronicsReviews");
+            // var reviewsSentiment = spark.Sql("SELECT *, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS sentiment FROM ElectronicsReviews");
 
             reviewsSentiment.Cache();
             reviewsSentiment.CreateOrReplaceTempView("ElectronicsReviewSentiment");
@@ -290,7 +292,7 @@ namespace CustomerSentiment.Spark
             Console.WriteLine("Analysing category consumer sentiment");
 
             var itemCategorySentiment = spark.Sql(
-                "SELECT EM.main_cat, COUNT(1) * AVG(ERS.sentiment) as sentiment_rank " +
+                "SELECT EM.main_cat, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
                 "FROM ElectronicsMetadata EM " +
                 "JOIN ElectronicsReviewSentiment ERS ON ERS.asin = EM.asin " +
                 "GROUP BY EM.main_cat");
@@ -303,7 +305,7 @@ namespace CustomerSentiment.Spark
             var bestCategorySentiment = spark.Sql(
                 "SELECT * " +
                 "FROM ItemCategorySentiment " +
-                "ORDER BY sentiment_rank DESC " +
+                "ORDER BY sentiment_rank DESC, review_count DESC " +
                 "LIMIT 20");
 
             bestCategorySentiment.Show();
@@ -313,7 +315,7 @@ namespace CustomerSentiment.Spark
             var worstCategorySentiment = spark.Sql(
                 "SELECT * " +
                 "FROM ItemCategorySentiment " +
-                "ORDER BY sentiment_rank DESC " +
+                "ORDER BY sentiment_rank ASC, review_count DESC " +
                 "LIMIT 20");
 
             worstCategorySentiment.Show();
@@ -324,34 +326,109 @@ namespace CustomerSentiment.Spark
             Console.WriteLine("Analysing brand consumer sentiment");
 
             var brandSentiment = spark.Sql(
-                "SELECT EM.brand, COUNT(1) * AVG(ERS.sentiment) as sentiment_rank " +
+                "SELECT EM.brand, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
                 "FROM ElectronicsMetadata EM " +
                 "JOIN ElectronicsReviewSentiment ERS ON ERS.asin = EM.asin " +
                 "GROUP BY EM.brand " +
-                "HAVING COUNT(1) >= 200");
+                "HAVING COUNT(1) >= 2000");
 
             brandSentiment.Cache();
             brandSentiment.CreateOrReplaceTempView("BrandSentiment");
+
+            Console.WriteLine("Analysing top 20 most popular brands.");
+
+            var mostPopularBrands = spark.Sql(
+                "SELECT * " +
+                "FROM BrandSentiment " +
+                "ORDER BY review_count DESC " +
+                "LIMIT 20");
+
+            mostPopularBrands.Show();
 
             Console.WriteLine("Analysing top 20 brands with best consumer sentiment.");
 
             var bestBrandSentiment = spark.Sql(
                 "SELECT * " +
                 "FROM BrandSentiment " +
-                "ORDER BY sentiment_rank DESC " +
+                "ORDER BY sentiment_rank DESC, review_count DESC " +
                 "LIMIT 20");
 
             bestBrandSentiment.Show();
+
+            Console.WriteLine("Analysing top 20 lest popular brands.");
+
+            var leastPopularBrands = spark.Sql(
+                "SELECT * " +
+                "FROM BrandSentiment " +
+                "ORDER BY review_count ASC " +
+                "LIMIT 20");
+
+            leastPopularBrands.Show();
 
             Console.WriteLine("Analysing top 20 brands with worst consumer sentiment.");
 
             var worstBrandSentiment = spark.Sql(
                 "SELECT * " +
                 "FROM BrandSentiment " +
-                "ORDER BY sentiment_rank ASC " +
+                "ORDER BY sentiment_rank ASC, review_count ASC " +
                 "LIMIT 20");
 
             worstBrandSentiment.Show();
+        }
+
+        private static void AnalyseProductSentiment(SparkSession spark)
+        {
+            Console.WriteLine("Analysing product consumer sentiment");
+
+            var productSentiment = spark.Sql(
+                "SELECT EM.title, EM.brand,  SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
+                "FROM ElectronicsMetadata EM " +
+                "JOIN ElectronicsReviewSentiment ERS ON ERS.asin = EM.asin " +
+                "GROUP BY EM.title, EM.brand " +
+                "HAVING COUNT(1) >= 100");
+
+            productSentiment.Cache();
+            productSentiment.CreateOrReplaceTempView("ProductSentiment");
+
+            Console.WriteLine("Analysing top 20 most popular products.");
+
+            var mostPopularProducts = spark.Sql(
+                "SELECT * " +
+                "FROM ProductSentiment " +
+                "ORDER BY review_count DESC " +
+                "LIMIT 20");
+
+            mostPopularProducts.Show();
+
+            Console.WriteLine("Analysing top 20 products with best consumer sentiment.");
+
+            var bestproductSentiment = spark.Sql(
+                "SELECT * " +
+                "FROM ProductSentiment " +
+                "ORDER BY sentiment_rank DESC, review_count DESC " +
+                "LIMIT 20");
+
+            bestproductSentiment.Show();
+
+            Console.WriteLine("Analysing top 20 lest popular products.");
+
+            var lestPopularProducts = spark.Sql(
+                "SELECT * " +
+                "FROM ProductSentiment " +
+                "ORDER BY review_count ASC " +
+                "LIMIT 20");
+
+            lestPopularProducts.Show();
+
+            Console.WriteLine("Analysing top 20 products with worst consumer sentiment.");
+
+            var worstproductSentiment = spark.Sql(
+                "SELECT * " +
+                "FROM ProductSentiment " +
+                "ORDER BY sentiment_rank ASC, review_count ASC " +
+                "LIMIT 20");
+
+            worstproductSentiment.Show();
         }
     }
 }
