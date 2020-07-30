@@ -35,6 +35,8 @@ namespace CustomerSentiment.Spark
             var spark = SparkSession
                 .Builder()
                 .AppName(_appName)
+                .Config("spark.cores.max", "4")
+                .Config("spark.ui.port", "4040")
                 .GetOrCreate();
 
             var start = DateTime.Now;
@@ -53,11 +55,11 @@ namespace CustomerSentiment.Spark
 
             AnalyseBrandSentimentVsTime(spark, context);
 
-            AnalyseProductSentiment(spark);
+            AnalyseProductSentiment(spark, context);
 
-            AnalyseCategoryDemand(spark);
+            AnalyseCategoryDemand(spark, context);
 
-            AnalyseBrandDemand(spark);
+            AnalyseBrandDemand(spark, context);
 
             var end = DateTime.Now;
             Console.WriteLine($"Time Elapsed : {(end - start).TotalSeconds} Seconds");
@@ -260,7 +262,7 @@ namespace CustomerSentiment.Spark
 
         private static void AnalyseCategorySentiment(SparkSession spark, CustomerSentimentContext context)
         {
-            Console.WriteLine("Analysing category consumer sentiment");
+            Console.WriteLine("Analyzing category consumer sentiment");
 
             var itemCategorySentiment = spark.Sql(
                 "SELECT EM.main_cat, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
@@ -271,7 +273,7 @@ namespace CustomerSentiment.Spark
             itemCategorySentiment.Cache();
             itemCategorySentiment.CreateOrReplaceTempView("ItemCategorySentiment");
 
-            Console.WriteLine("Analysing categories with best consumer sentiment.");
+            Console.WriteLine("Analyzing categories with best consumer sentiment.");
 
             var categorySentiment = spark.Sql(
                 "SELECT * " +
@@ -279,25 +281,25 @@ namespace CustomerSentiment.Spark
                 "ORDER BY sentiment_rank DESC, review_count DESC");
 
             categorySentiment.Show();
-            var categorySentimentItems = categorySentiment
-                .Collect()
-                .Select(r => new ItemCategorySentiment
+
+            var items = Mapper.MapRows(
+                categorySentiment.Collect(),
+                r => new ItemCategorySentiment
                 {
-                    Id = Guid.NewGuid(),
                     Category = r.GetAs<string>(0),
                     SentimentRank = r.GetAs<double>(1),
                     ReviewCount = r.GetAs<int>(2)
-                })
-                .ToArray();
+                },
+                o => o.Category);
 
-            context.ItemCategorySentiment.AddRange(categorySentimentItems);
+            context.ItemCategorySentiment.AddRange(items);
 
             context.SaveChanges();
         }
 
         private static void AnalyseBrandSentiment(SparkSession spark, CustomerSentimentContext context)
         {
-            Console.WriteLine("Analysing brand consumer sentiment");
+            Console.WriteLine("Analyzing brand consumer sentiment");
 
             var brandSentiment = spark.Sql(
                 "SELECT EM.brand, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
@@ -309,21 +311,20 @@ namespace CustomerSentiment.Spark
             brandSentiment.Cache();
             brandSentiment.CreateOrReplaceTempView("BrandSentiment");
 
-            var brandSentimentItems = brandSentiment
-                .Collect()
-                .Select(r => new BrandSentiment
+            var items = Mapper.MapRows(
+                brandSentiment.Collect(),
+                r => new BrandSentiment
                 {
-                    Id = Guid.NewGuid(),
                     Brand = r.GetAs<string>(0),
                     SentimentRank = r.GetAs<double>(1),
                     ReviewCount = r.GetAs<int>(2)
-                })
-                .ToArray();
+                },
+                o => o.Brand);
 
-            context.BrandSentiment.AddRange(brandSentimentItems);
+            context.BrandSentiment.AddRange(items);
             context.SaveChanges();
 
-            Console.WriteLine("Analysing top 20 most popular brands.");
+            Console.WriteLine("Analyzing top 20 most popular brands.");
 
             var mostPopularBrands = spark.Sql(
                 "SELECT * " +
@@ -333,7 +334,7 @@ namespace CustomerSentiment.Spark
 
             mostPopularBrands.Show();
 
-            Console.WriteLine("Analysing top 20 brands with best consumer sentiment.");
+            Console.WriteLine("Analyzing top 20 brands with best consumer sentiment.");
 
             var bestBrandSentiment = spark.Sql(
                 "SELECT * " +
@@ -343,7 +344,7 @@ namespace CustomerSentiment.Spark
 
             bestBrandSentiment.Show();
 
-            Console.WriteLine("Analysing top 20 lest popular brands.");
+            Console.WriteLine("Analyzing top 20 lest popular brands.");
 
             var leastPopularBrands = spark.Sql(
                 "SELECT * " +
@@ -353,7 +354,7 @@ namespace CustomerSentiment.Spark
 
             leastPopularBrands.Show();
 
-            Console.WriteLine("Analysing top 20 brands with worst consumer sentiment.");
+            Console.WriteLine("Analyzing top 20 brands with worst consumer sentiment.");
 
             var worstBrandSentiment = spark.Sql(
                 "SELECT * " +
@@ -380,24 +381,23 @@ namespace CustomerSentiment.Spark
             brandSentimentVsTime.CreateOrReplaceTempView("BrandSentimentVsTime");
             brandSentimentVsTime.Show();
 
-            var brandSentimentVsTimeItems = brandSentimentVsTime
-                .Collect()
-                .Select(r => new BrandSentimentVsTime
+            var items = Mapper.MapRows(
+                brandSentimentVsTime.Collect(),
+                r => new BrandSentimentVsTime
                 {
-                    Id = Guid.NewGuid(),
                     Brand = r.GetAs<string>(0),
                     Year = int.Parse(r.GetAs<string>(1)),
                     SentimentRank = r.GetAs<double>(2)
-                })
-                .ToArray();
+                },
+                o => $"{o.Brand}-{o.Year}");
 
-            context.BrandSentimentVsTime.AddRange(brandSentimentVsTimeItems);
+            context.BrandSentimentVsTime.AddRange(items);
             context.SaveChanges();
         }
 
-        private static void AnalyseProductSentiment(SparkSession spark)
+        private static void AnalyseProductSentiment(SparkSession spark, CustomerSentimentContext context)
         {
-            Console.WriteLine("Analysing product consumer sentiment");
+            Console.WriteLine("Analyzing product consumer sentiment");
 
             var productSentiment = spark.Sql(
                 "SELECT EM.title, EM.brand,  SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
@@ -409,7 +409,7 @@ namespace CustomerSentiment.Spark
             productSentiment.Cache();
             productSentiment.CreateOrReplaceTempView("ProductSentiment");
 
-            Console.WriteLine("Analysing top 20 most popular products.");
+            Console.WriteLine("Analyzing top 20 most popular products.");
 
             var mostPopularProducts = spark.Sql(
                 "SELECT * " +
@@ -418,8 +418,9 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             mostPopularProducts.Show();
+            var rows = mostPopularProducts.Collect();
 
-            Console.WriteLine("Analysing top 20 products with best consumer sentiment.");
+            Console.WriteLine("Analyzing top 20 products with best consumer sentiment.");
 
             var bestproductSentiment = spark.Sql(
                 "SELECT * " +
@@ -428,8 +429,9 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             bestproductSentiment.Show();
+            rows = rows.Union(bestproductSentiment.Collect());
 
-            Console.WriteLine("Analysing top 20 lest popular products.");
+            Console.WriteLine("Analyzing top 20 lest popular products.");
 
             var lestPopularProducts = spark.Sql(
                 "SELECT * " +
@@ -438,8 +440,9 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             lestPopularProducts.Show();
+            rows = rows.Union(lestPopularProducts.Collect());
 
-            Console.WriteLine("Analysing top 20 products with worst consumer sentiment.");
+            Console.WriteLine("Analyzing top 20 products with worst consumer sentiment.");
 
             var worstproductSentiment = spark.Sql(
                 "SELECT * " +
@@ -448,9 +451,25 @@ namespace CustomerSentiment.Spark
                 "LIMIT 20");
 
             worstproductSentiment.Show();
+            rows = rows.Union(worstproductSentiment.Collect());
+
+            var items = Mapper.MapRows(
+                rows,
+                r => new ProductSentiment
+                {
+                    Name = r.GetAs<string>(0),
+                    Brand = r.GetAs<string>(1),
+                    SentimentRank = r.GetAs<double>(2),
+                    ReviewCount = r.GetAs<int>(3)
+
+                },
+                o => $"{o.Name}-{o.Brand}");
+
+            context.ProductSentiment.AddRange(items);
+            context.SaveChanges();
         }
 
-        private static void AnalyseCategoryDemand(SparkSession spark)
+        private static void AnalyseCategoryDemand(SparkSession spark, CustomerSentimentContext context)
         {
             Console.WriteLine("Analysing category consumer demand");
 
@@ -463,6 +482,19 @@ namespace CustomerSentiment.Spark
 
             categoriesDemand.Cache();
             categoriesDemand.CreateOrReplaceTempView("CategoryDemand");
+
+            var items = Mapper.MapRows(
+                categoriesDemand.Collect(),
+                r => new CategoryDemand
+                {
+                    Category = r.GetAs<string>(0),
+                    Month = int.Parse(r.GetAs<string>(1)),
+                    Demand = r.GetAs<int>(2)
+                },
+                o => $"{o.Category}-{o.Month}");
+
+            context.CategoryDemand.AddRange(items);
+            context.SaveChangesAsync();
 
             var categories = spark.Sql("SELECT main_cat FROM CategoryDemand GROUP BY main_cat")
                 .Collect()
@@ -482,7 +514,7 @@ namespace CustomerSentiment.Spark
             }
         }
 
-        private static void AnalyseBrandDemand(SparkSession spark)
+        private static void AnalyseBrandDemand(SparkSession spark, CustomerSentimentContext context)
         {
             Console.WriteLine("Analysing first party brand consumer demand");
 
@@ -496,6 +528,19 @@ namespace CustomerSentiment.Spark
 
             brandsDemand.Cache();
             brandsDemand.CreateOrReplaceTempView("BrandsDemand");
+
+            var items = Mapper.MapRows(
+                brandsDemand.Collect(),
+                r => new BrandDemand
+                {
+                    Brand = r.GetAs<string>(0),
+                    Month = int.Parse(r.GetAs<string>(1)),
+                    Demand = r.GetAs<int>(2)
+                },
+                o => $"{o.Brand}-{o.Month}");
+
+            context.BrandDemand.AddRange(items);
+            context.SaveChanges();
 
             var brands = spark.Sql("SELECT brand FROM BrandsDemand GROUP BY brand")
                 .Collect()
