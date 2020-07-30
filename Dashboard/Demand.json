@@ -1,0 +1,2438 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": false,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 20,
+      "panels": [],
+      "title": "Amazon Brand",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 9,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Amazon Devices'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Amazon Devices",
+      "type": "gauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 6,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'AmazonBasics'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "AmazonBasics Demand",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 6,
+        "x": 6,
+        "y": 5
+      },
+      "id": 16,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon Digital Services Inc.'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Amazon Digital Services Inc Demand",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 6,
+        "x": 12,
+        "y": 5
+      },
+      "id": 17,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon.com'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Amazon.com Demand",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "id": 18,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Amazon Demand",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 27,
+      "panels": [],
+      "title": "Small Electronics",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 23
+      },
+      "id": 28,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'All Electronics'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 23
+      },
+      "id": 13,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'All Electronics'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Small Electronics",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 27
+      },
+      "id": 29,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'All Electronics'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 22,
+      "panels": [],
+      "title": "Home Audio & Theater",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 32
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Home Audio & Theater'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 32
+      },
+      "id": 3,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Home Audio & Theater'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Home Audio & Theater",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 36
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Home Audio & Theater'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "id": 31,
+      "panels": [],
+      "title": "Camera & Photo",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 41
+      },
+      "id": 32,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Camera & Photo'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 41
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Camera & Photo'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Camera & Photo",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 45
+      },
+      "id": 33,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Camera & Photo'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 49
+      },
+      "id": 35,
+      "panels": [],
+      "title": "Cell Phones & Accessories",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 50
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Cell Phones & Accessories'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 50
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Cell Phones & Accessories'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Cell Phones & Accessories",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 54
+      },
+      "id": 37,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Cell Phones & Accessories'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 58
+      },
+      "id": 39,
+      "panels": [],
+      "title": "Computers",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 59
+      },
+      "id": 40,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Computers'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 59
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Computers'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Computers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 63
+      },
+      "id": 41,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Computers'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 67
+      },
+      "id": 43,
+      "panels": [],
+      "title": "Car Electronics",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 68
+      },
+      "id": 44,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Car Electronics'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 68
+      },
+      "id": 8,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Car Electronics'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Car Electronics",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 72
+      },
+      "id": 45,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Car Electronics'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 76
+      },
+      "id": 47,
+      "panels": [],
+      "title": "Health & Personal Care",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 77
+      },
+      "id": 48,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Health & Personal Care'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 77
+      },
+      "id": 11,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Health & Personal Care'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Health & Personal Care",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 81
+      },
+      "id": 49,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Health & Personal Care'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 85
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Industrial & Scientific",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 86
+      },
+      "id": 51,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Industrial & Scientific'\r\n\tORDER BY \"Demand\" DESC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Best Month",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 25
+              },
+              {
+                "color": "dark-blue",
+                "value": 50
+              },
+              {
+                "color": "dark-green",
+                "value": 75
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 8,
+        "y": 86
+      },
+      "id": 12,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Category\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"CategoryDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Category\" = 'Industrial & Scientific'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Industrial & Scientific",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 90
+      },
+      "id": 52,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": true
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT TO_CHAR(TO_TIMESTAMP(\"Date\", 'YYYY-MM-DD'), 'Month') AS \"Month\", \"Demand\"\r\nFROM (\r\n\tSELECT CONCAT('2020-', \"Month\", '-01') AS \"Date\", \"Demand\"\r\n\tFROM \"CategoryDemand\"\r\n\tWHERE \"Category\" = 'Industrial & Scientific'\r\n\tORDER BY \"Demand\" ASC\r\n\tLIMIT 1) T",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Worst Month",
+      "type": "stat"
+    }
+  ],
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true,
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Demand",
+  "uid": "XKkTPxVGk",
+  "version": 19
+}
