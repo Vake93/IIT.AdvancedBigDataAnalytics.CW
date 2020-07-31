@@ -29,7 +29,7 @@
       },
       "id": 20,
       "panels": [],
-      "title": "Amazon Brand",
+      "title": "Top Brands",
       "type": "row"
     },
     {
@@ -175,7 +175,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'AmazonBasics'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Canon'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
           "refId": "A",
           "select": [
             [
@@ -199,11 +199,12 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "AmazonBasics Demand",
+      "title": "Canon Demand",
       "type": "bargauge"
     },
     {
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -259,7 +260,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon Digital Services Inc.'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Sony'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
           "refId": "A",
           "select": [
             [
@@ -283,7 +284,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Amazon Digital Services Inc Demand",
+      "title": "Sony Demand",
       "type": "bargauge"
     },
     {
@@ -343,7 +344,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon.com'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Logitech'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
           "refId": "A",
           "select": [
             [
@@ -367,7 +368,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Amazon.com Demand",
+      "title": "Logitech Demand",
       "type": "bargauge"
     },
     {
@@ -427,7 +428,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Amazon'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
+          "rawSql": "SELECT \"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\" ,\"August\" ,\"September\" ,\"October\" ,\"November\" ,\"December\" \r\nFROM CROSSTAB(\r\n\t$$\r\n\t\tSELECT CD.\"Brand\" AS \"rowid\", M.\"Month\" AS \"category\", COALESCE(CD.\"Demand\", 0) AS \"value\"\r\n\t\tFROM (SELECT GENERATE_SERIES AS \"Month\"  FROM GENERATE_SERIES(1,12)) M\r\n\t\tLEFT JOIN \"BrandDemand\" CD ON CD.\"Month\" = M.\"Month\" AND CD.\"Brand\" = 'Belkin'\r\n\t\tORDER BY M.\"Month\"\r\n\t$$,\r\n\t$$ \r\n\t\tSELECT * FROM GENERATE_SERIES(1, 12)\r\n\t$$) AS \r\n\tFINAL_RESULT(\r\n\t\t\"Category\" TEXT, \"January\" NUMERIC, \"February\" NUMERIC, \"March\" NUMERIC, \"April\" NUMERIC, \"May\" NUMERIC, \"June\" NUMERIC,\r\n\t\t\"July\" NUMERIC, \"August\" NUMERIC, \"September\" NUMERIC, \"October\" NUMERIC, \"November\" NUMERIC, \"December\" NUMERIC)",
           "refId": "A",
           "select": [
             [
@@ -451,7 +452,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Amazon Demand",
+      "title": "Belkin Demand",
       "type": "bargauge"
     },
     {
@@ -2434,5 +2435,5 @@
   "timezone": "",
   "title": "Demand",
   "uid": "XKkTPxVGk",
-  "version": 19
+  "version": 24
 }

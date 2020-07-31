@@ -33,6 +33,10 @@
       "type": "row"
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": null,
       "fieldConfig": {
         "defaults": {
@@ -66,28 +70,39 @@
         },
         "overrides": []
       },
+      "fill": 0,
+      "fillGradient": 4,
       "gridPos": {
-        "h": 4,
+        "h": 11,
         "w": 24,
         "x": 0,
         "y": 1
       },
+      "hiddenSeries": false,
       "id": 18,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "vertical",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": false
       },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null",
+      "percentage": false,
       "pluginVersion": "7.1.1",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "format": "table",
@@ -95,7 +110,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"AmazonBasics\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'AmazonBasics'",
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Canon\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Canon' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
           "refId": "A",
           "select": [
             [
@@ -119,9 +134,10 @@
         {
           "format": "table",
           "group": [],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Amazon Digital Services Inc.\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Amazon Digital Services Inc.'",
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Sony\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Sony' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
           "refId": "B",
           "select": [
             [
@@ -145,9 +161,10 @@
         {
           "format": "table",
           "group": [],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Amazon.com\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Amazon.com'",
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Logitech\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Logitech' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
           "refId": "C",
           "select": [
             [
@@ -173,7 +190,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Amazon\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Amazon'",
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Belkin\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Belkin' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
           "refId": "D",
           "select": [
             [
@@ -193,12 +210,179 @@
               "type": "macro"
             }
           ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"SanDisk\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'SanDisk' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
+          "refId": "E",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Tamron\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Tamron' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
+          "refId": "F",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Sigma\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Sigma' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
+          "refId": "G",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Pentax\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Pentax' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
+          "refId": "H",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT to_date('0101' || \"Year\", 'DDMMYYYY') as \"Date\", \"SentimentRank\" as \"Fujifilm\"\nFROM \"BrandSentimentVsTime\"\nWHERE \"Brand\" = 'Fujifilm' AND \"Year\" >= 2000\nORDER BY to_date('0101' || \"Year\", 'DDMMYYYY') ASC",
+          "refId": "I",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "",
-      "type": "stat"
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "collapsed": false,
@@ -207,267 +391,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
-      },
-      "id": 14,
-      "panels": [],
-      "title": "Categories",
-      "type": "row"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "left"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Sentiment Score"
-            },
-            "properties": [
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 65
-                    },
-                    {
-                      "color": "blue",
-                      "value": 75
-                    },
-                    {
-                      "color": "green",
-                      "value": 90
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Category"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 204
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 6
-      },
-      "id": 2,
-      "options": {
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT \"Category\", ROUND(\"SentimentRank\") AS \"Sentiment Score\"\nFROM \"ItemCategorySentiment\"\nORDER BY \"SentimentRank\" DESC, \"ReviewCount\" DESC\nLIMIT 5",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "5 Best Product Categories 👍",
-      "type": "table"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "left"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Sentiment Score"
-            },
-            "properties": [
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 65
-                    },
-                    {
-                      "color": "blue",
-                      "value": 75
-                    },
-                    {
-                      "color": "green",
-                      "value": 90
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Category"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 204
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 6
-      },
-      "id": 3,
-      "options": {
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT \"Category\", ROUND(\"SentimentRank\") AS \"Sentiment Score\"\nFROM \"ItemCategorySentiment\"\nORDER BY \"SentimentRank\" ASC, \"ReviewCount\" ASC\nLIMIT 5",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "5 Worst Product Categories 👎",
-      "type": "table"
-    },
-    {
-      "collapsed": false,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 13
+        "y": 12
       },
       "id": 9,
       "panels": [],
@@ -547,7 +471,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 13
       },
       "id": 5,
       "options": {
@@ -584,7 +508,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Most Popular Brands 📈",
+      "title": "5 Most Popular Brands ??",
       "type": "table"
     },
     {
@@ -660,7 +584,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 13
       },
       "id": 10,
       "options": {
@@ -697,7 +621,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Least Popular Brands 📉",
+      "title": "5 Least Popular Brands ??",
       "type": "table"
     },
     {
@@ -773,7 +697,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 20
       },
       "id": 11,
       "options": {
@@ -810,7 +734,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Most Loved Brands 💖",
+      "title": "5 Most Loved Brands ??",
       "type": "table"
     },
     {
@@ -886,7 +810,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 20
       },
       "id": 12,
       "options": {
@@ -923,7 +847,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Least Loved Brands 💔",
+      "title": "5 Least Loved Brands ??",
       "type": "table"
     },
     {
@@ -933,7 +857,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 27
       },
       "id": 20,
       "panels": [],
@@ -1030,7 +954,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 28
       },
       "id": 22,
       "links": [],
@@ -1069,7 +993,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Most Popular Products 🤩",
+      "title": "5 Most Popular Products ??",
       "type": "table"
     },
     {
@@ -1162,7 +1086,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 28
       },
       "id": 24,
       "options": {
@@ -1200,7 +1124,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Most Loved Products 💓",
+      "title": "5 Most Loved Products ??",
       "type": "table"
     },
     {
@@ -1297,12 +1221,17 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 35
       },
       "id": 25,
       "options": {
         "showHeader": true,
-        "sortBy": []
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Sentiment Score"
+          }
+        ]
       },
       "pluginVersion": "7.1.1",
       "targets": [
@@ -1311,7 +1240,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"Name\", \"Brand\", \"SentimentRank\" AS \"Sentiment Score\"\nFROM \"ProductSentiment\"\nORDER BY \"ReviewCount\" ASC\nLIMIT 5",
+          "rawSql": "SELECT \"Brand\", \"SentimentRank\" AS \"Sentiment Score\"\nFROM \"BrandSentiment\"\nORDER BY \"ReviewCount\" ASC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
@@ -1335,7 +1264,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Least Popular Brands 😫",
+      "title": "5 Least Popular Brands ??",
       "type": "table"
     },
     {
@@ -1432,7 +1361,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 35
       },
       "id": 26,
       "options": {
@@ -1446,7 +1375,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \"Name\", \"Brand\", \"SentimentRank\" AS \"Sentiment Score\"\nFROM \"ProductSentiment\"\nORDER BY \"SentimentRank\" ASC, \"ReviewCount\" ASC\nLIMIT 5",
+          "rawSql": "SELECT \"Brand\", \"SentimentRank\" AS \"Sentiment Score\"\nFROM \"BrandSentiment\"\nORDER BY \"SentimentRank\" ASC, \"ReviewCount\" ASC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
@@ -1470,7 +1399,267 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "5 Least Loved Brands 😡",
+      "title": "5 Least Loved Brands ??",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      },
+      "id": 14,
+      "panels": [],
+      "title": "Categories",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sentiment Score"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 65
+                    },
+                    {
+                      "color": "blue",
+                      "value": 75
+                    },
+                    {
+                      "color": "green",
+                      "value": 90
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Category"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 204
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 43
+      },
+      "id": 2,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"Category\", ROUND(\"SentimentRank\") AS \"Sentiment Score\"\nFROM \"ItemCategorySentiment\"\nORDER BY \"SentimentRank\" DESC, \"ReviewCount\" DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "5 Best Product Categories ??",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sentiment Score"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 65
+                    },
+                    {
+                      "color": "blue",
+                      "value": 75
+                    },
+                    {
+                      "color": "green",
+                      "value": 90
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Category"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 204
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 43
+      },
+      "id": 3,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT \"Category\", ROUND(\"SentimentRank\") AS \"Sentiment Score\"\nFROM \"ItemCategorySentiment\"\nORDER BY \"SentimentRank\" ASC, \"ReviewCount\" ASC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "5 Worst Product Categories ??",
       "type": "table"
     }
   ],
@@ -1492,5 +1681,5 @@
   "timezone": "",
   "title": "Customer Sentiment",
   "uid": "N4MtLxVMk",
-  "version": 13
+  "version": 25
 }
