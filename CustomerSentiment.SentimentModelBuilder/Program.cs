@@ -1,5 +1,8 @@
 ﻿using Microsoft.ML;
+using Microsoft.ML.AutoML;
+using Microsoft.ML.Data;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace CustomerSentiment.SentimentModelBuilder
@@ -13,106 +16,58 @@ namespace CustomerSentiment.SentimentModelBuilder
         {
             var mlContext = new MLContext(seed: 1024);
 
-            // Load Data
-            var trainingDataView = mlContext.Data.LoadFromTextFile<ModelInput>(
-                path: TraningDataPath,
-                hasHeader: true,
-                separatorChar: '\t',
-                allowQuoting: true,
-                allowSparse: false);
+            var trainData = mlContext
+                .Data
+                .LoadFromTextFile<ModelInput>(
+                    TraningDataPath,
+                    hasHeader: false,
+                    separatorChar: '\t',
+                    allowQuoting: true,
+                    trimWhitespace: true);
 
-            // Build training pipeline
-            var trainingPipeline = BuildTrainingPipeline(mlContext);
-
-            // Train Model
-            var mlModel = TrainModel(trainingDataView, trainingPipeline);
-
-            // Evaluate quality of Model
-            Evaluate(mlContext, trainingDataView, trainingPipeline);
-
-            // Save model
-            SaveModel(mlContext, mlModel, ModelPath, trainingDataView.Schema);
-
-            // Make test prediction
-            TestPrediction(mlContext, mlModel);
-        }
-
-        private static IEstimator<ITransformer> BuildTrainingPipeline(MLContext mlContext)
-        {
-            // Data process configuration with pipeline data transformations 
-            var dataProcessPipeline = mlContext.Transforms.Conversion.MapValueToKey("sentiment", "sentiment")
-                .Append(mlContext.Transforms.Text.FeaturizeText("featurizeText", "text"))
-                .Append(mlContext.Transforms.CopyColumns("Features", "featurizeText"))
-                .Append(mlContext.Transforms.NormalizeMinMax("Features", "Features"))
-                .AppendCacheCheckpoint(mlContext);
-
-            // Set the training algorithm 
-            var binaryEstimator = mlContext.BinaryClassification.Trainers.AveragedPerceptron(
-                labelColumnName: "sentiment",
-                numberOfIterations: 30,
-                featureColumnName: "Features");
-
-            var estimator = mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel", "PredictedLabel");
-
-            var trainer = mlContext.MulticlassClassification.Trainers.OneVersusAll(binaryEstimator, labelColumnName: "sentiment")
-                .Append(estimator);
-
-            return dataProcessPipeline.Append(trainer);
-        }
-
-        public static ITransformer TrainModel(IDataView trainingDataView, IEstimator<ITransformer> trainingPipeline)
-        {
-            Console.WriteLine("Training model");
-            Console.WriteLine();
-            return trainingPipeline.Fit(trainingDataView);
-        }
-
-        private static void Evaluate(MLContext mlContext, IDataView trainingDataView, IEstimator<ITransformer> trainingPipeline)
-        {
-            Console.WriteLine("Cross-validating model");
-            var crossValidationResults = mlContext.MulticlassClassification.CrossValidate(
-                trainingDataView,
-                trainingPipeline,
-                numberOfFolds: 5,
-                labelColumnName: "sentiment");
-
-            var confusionMatrix = crossValidationResults
-                .Select(r => r.Metrics.ConfusionMatrix)
-                .Select(m => new double[,]
-                {
-                    {m.Counts[0][0], m.Counts[0][1] },
-                    {m.Counts[1][0], m.Counts[1][1] },
-                })
-                .Aggregate((m, n) => new double[,]
-                {
-                    {m[0,0] + n[0,0], m[0,1] + n[0,1]},
-                    {m[1,0] + n[1,0], m[1,1] + n[1,1]}
-                });
-
-            Console.WriteLine("ConfusionMatrix: ");
-            Console.WriteLine($"{Math.Round(confusionMatrix[0, 0] / 5)}, {Math.Round(confusionMatrix[0, 1] / 5)}");
-            Console.WriteLine($"{Math.Round(confusionMatrix[1, 0] / 5)}, {Math.Round(confusionMatrix[1, 1] / 5)}");
-            Console.WriteLine();
-        }
-
-        private static void SaveModel(MLContext mlContext, ITransformer mlModel, string modelPath, DataViewSchema modelInputSchema)
-        {
-            Console.WriteLine("Saving the model");
-            mlContext.Model.Save(mlModel, modelInputSchema, modelPath);
-            Console.WriteLine($"The model is saved to {modelPath}");
-        }
-
-        private static void TestPrediction(MLContext mlContext, ITransformer mlModel)
-        {
-            Console.WriteLine("Test model");
-            var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
-            var result = predictionEngine.Predict(new ModelInput
+            var experimentSettings = new BinaryExperimentSettings
             {
-                Text = "Comfortable, good bass depth and very durable. " +
-                "This is my second pair and I have nothing but good things to say!"
-            });
+                MaxExperimentTimeInSeconds = (uint)TimeSpan.FromMinutes(5).TotalSeconds,
+                OptimizingMetric = BinaryClassificationMetric.Accuracy,
+            };
 
-            Console.WriteLine($"Predicted {result.Prediction}, scores {string.Join(", ", result.Score)}");
+            var experiment = mlContext.Auto().CreateBinaryClassificationExperiment(experimentSettings);
+
+            var preFeaturizer = mlContext.Transforms.Text.FeaturizeText("FeaturizeText", "text")
+                .Append(mlContext.Transforms.NormalizeMinMax("Features", "FeaturizeText"));
+
+            var experimentResult = experiment.Execute(
+                trainData,
+                "sentiment",
+                preFeaturizer: preFeaturizer,
+                progressHandler: new BinaryExperimentProgressHandler());
+
+            var bestRun = experimentResult.BestRun;
+
+            PrintMetrics(bestRun.TrainerName, bestRun.ValidationMetrics);
+
+            if (File.Exists(ModelPath))
+            {
+                File.Delete(ModelPath);
+            }
+
+            mlContext.Model.Save(bestRun.Model, trainData.Schema, ModelPath);
+        }
+
+        private static void PrintMetrics(string name, BinaryClassificationMetrics metrics)
+        {
+            Console.WriteLine();
+            Console.WriteLine($" Metrics for {name} binary classification model");
+            Console.WriteLine();
+            Console.WriteLine($" Accuracy                          :  {metrics.Accuracy:P2}");
+            Console.WriteLine($" Area Under Curve                  :  {metrics.AreaUnderRocCurve:P2}");
+            Console.WriteLine($" Area under Precision recall Curve :  {metrics.AreaUnderPrecisionRecallCurve:P2}");
+            Console.WriteLine($" F1Score                           :  {metrics.F1Score:P2}");
+            Console.WriteLine($" PositivePrecision                 :  {metrics.PositivePrecision:#.##}");
+            Console.WriteLine($" PositiveRecall                    :  {metrics.PositiveRecall:#.##}");
+            Console.WriteLine($" NegativePrecision                 :  {metrics.NegativePrecision:#.##}");
+            Console.WriteLine($" NegativeRecall                    :  {metrics.NegativeRecall:P2}");
+            Console.WriteLine();
         }
     }
 }

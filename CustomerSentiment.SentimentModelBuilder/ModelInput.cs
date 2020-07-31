@@ -9,6 +9,6 @@ namespace CustomerSentiment.SentimentModelBuilder
 
 
         [ColumnName("sentiment"), LoadColumn(1)]
-        public string Sentiment { get; set; }
+        public bool Sentiment { get; set; }
     }
 }
