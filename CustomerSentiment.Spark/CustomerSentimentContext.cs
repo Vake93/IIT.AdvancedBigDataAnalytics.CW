@@ -40,7 +40,7 @@ namespace CustomerSentiment.Spark
 
             modelBuilder
                 .Entity<ProductSentiment>()
-                .HasKey(p => new { p.Name, p.Brand });
+                .HasKey(p => p.Id);
 
             modelBuilder
                 .Entity<CategoryDemand>()

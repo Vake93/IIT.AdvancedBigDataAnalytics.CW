@@ -62,7 +62,9 @@ namespace CustomerSentiment.Spark
             AnalyseBrandDemand(spark, context);
 
             var end = DateTime.Now;
-            Console.WriteLine($"Time Elapsed : {(end - start).TotalSeconds} Seconds");
+            Console.WriteLine($"Time Elapsed : {(end - start).TotalMinutes} Minutes");
+
+            Console.ReadLine();
         }
 
         private static DataFrame LoadMetadataFile(string metadataPath, SparkSession spark)
@@ -188,8 +190,6 @@ namespace CustomerSentiment.Spark
                 new StructField("reviewerID", new StringType(), isNullable: false),
                 new StructField("asin", new StringType(), isNullable: false),
                 new StructField("reviewText", new StringType()),
-                new StructField("summary", new StringType()),
-                new StructField("overall", new FloatType()),
                 new StructField("unixReviewTime", new LongType())
             });
 
@@ -220,8 +220,7 @@ namespace CustomerSentiment.Spark
                 .Filter(
                     dataFrame["reviewerID"].IsNotNull()
                     .And(dataFrame["asin"].IsNotNull())
-                    .And(dataFrame["reviewText"].IsNotNull())
-                    .And(dataFrame["overall"].IsNotNull()));
+                    .And(dataFrame["reviewText"].IsNotNull()));
 
             dataFrame = dataFrame
                 .WithColumnRenamed("reviewerID", "rid")
@@ -246,15 +245,14 @@ namespace CustomerSentiment.Spark
             var result = predEngine.Predict(
                 new ModelInput { Text = text });
 
-            return result.Prediction == "1" ? 1 : 0;
+            return result.Prediction ? 1 : 0;
         }
 
         private static void ElectronicsReviewsSentimentAnalysis(SparkSession spark)
         {
             spark.Udf().Register<string, int>("sentiment_udf", text => Sentiment(text));
 
-            // var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(review_text) AS sentiment FROM ElectronicsReviews");
-            var reviewsSentiment = spark.Sql("SELECT *, (CASE WHEN overall >= 3 THEN 1 ELSE 0 END) AS sentiment FROM ElectronicsReviews");
+            var reviewsSentiment = spark.Sql("SELECT *, sentiment_udf(review_text) AS sentiment FROM ElectronicsReviews");
 
             reviewsSentiment.Cache();
             reviewsSentiment.CreateOrReplaceTempView("ElectronicsReviewSentiment");
@@ -369,11 +367,20 @@ namespace CustomerSentiment.Spark
         {
             Console.WriteLine("Analysing brand consumer sentiment");
 
+            var brands = context.BrandSentiment
+                .OrderByDescending(b => b.SentimentRank)
+                .ThenBy(b => b.ReviewCount)
+                .Take(10)
+                .Select(b => $"'{b.Brand}'")
+                .ToArray();
+
+            var brandList = string.Join(',', brands);
+
             var brandSentimentVsTime = spark.Sql(
                 "SELECT EM.brand, FROM_UNIXTIME(ERS.unix_time, 'YYYY') as year, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank " +
                 "FROM ElectronicsMetadata EM " +
                 "JOIN ElectronicsReviewSentiment ERS ON ERS.asin = EM.asin " +
-                "WHERE EM.brand LIKE 'Amazon%' " +
+               $"WHERE EM.brand IN ({brandList}) " +
                 "GROUP BY EM.brand, FROM_UNIXTIME(ERS.unix_time, 'YYYY') " +
                 "ORDER BY FROM_UNIXTIME(ERS.unix_time, 'YYYY')");
 
@@ -516,14 +523,23 @@ namespace CustomerSentiment.Spark
 
         private static void AnalyseBrandDemand(SparkSession spark, CustomerSentimentContext context)
         {
-            Console.WriteLine("Analysing first party brand consumer demand");
+            Console.WriteLine("Analysing popular brand demand");
+
+            var brands = context.BrandSentiment
+                .OrderByDescending(b => b.ReviewCount)
+                .ThenBy(b => b.SentimentRank)
+                .Take(10)
+                .Select(b => $"'{b.Brand}'")
+                .ToArray();
+
+            var brandList = string.Join(',', brands);
 
             var brandsDemand = spark.Sql(
                 "SELECT EM.brand, FROM_UNIXTIME(ER.unix_time, 'MM') as month, COUNT(1) as demand " +
                 "FROM ElectronicsReviews ER " +
                 "JOIN ElectronicsMetadata EM ON EM.asin = ER.asin " +
-                "WHERE EM.brand LIKE 'Amazon%' " +
-                "GROUP BY EM.brand, from_unixtime(ER.unix_time, 'MM') " +
+               $"WHERE EM.brand IN ({brandList}) " +
+                "GROUP BY EM.brand, FROM_UNIXTIME(ER.unix_time, 'MM') " +
                 "ORDER BY EM.brand, FROM_UNIXTIME(ER.unix_time, 'MM')");
 
             brandsDemand.Cache();
@@ -542,11 +558,6 @@ namespace CustomerSentiment.Spark
             context.BrandDemand.AddRange(items);
             context.SaveChanges();
 
-            var brands = spark.Sql("SELECT brand FROM BrandsDemand GROUP BY brand")
-                .Collect()
-                .Select(r => r.GetAs<string>(0))
-                .ToArray();
-
             foreach (var brand in brands)
             {
                 Console.WriteLine($"Analysing consumer demand for {brand}");
@@ -554,7 +565,7 @@ namespace CustomerSentiment.Spark
                 var brandDemand = spark.Sql(
                     "SELECT * " +
                     "FROM BrandsDemand " +
-                   $"WHERE brand = '{brand}'");
+                   $"WHERE brand = {brand}");
 
                 brandDemand.Show();
             }
