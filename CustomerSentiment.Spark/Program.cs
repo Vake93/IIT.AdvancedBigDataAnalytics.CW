@@ -17,7 +17,7 @@ namespace CustomerSentiment.Spark
         const string _sentimentModelFile = "SentimentModel.zip";
         const string _metadataPath = @"hdfs://localhost:9000/data/Electronics_Metadata.json";
         const string _reviewsPath = @"hdfs://localhost:9000/data/Electronics_Reviews.json";
-        const string _connectionString = "Server=localhost;Database=customer-sentiment-db;User Id=postgres;Password=postgres;Application Name=CustomerSentiment;";
+        const string _connectionString = "Server=localhost;Database=customer-sentiment;User Id=postgres;Password=postgres;Application Name=CustomerSentiment;";
 
         private static readonly MLContext _mlContext;
         private static readonly ITransformer _mlModel;
@@ -297,6 +297,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => o.Category);
 
+            context.ItemCategorySentiment.RemoveRange(context.ItemCategorySentiment);
             context.ItemCategorySentiment.AddRange(items);
 
             context.SaveChanges();
@@ -326,6 +327,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => o.Brand);
 
+            context.BrandSentiment.RemoveRange(context.BrandSentiment);
             context.BrandSentiment.AddRange(items);
             context.SaveChanges();
 
@@ -405,6 +407,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => $"{o.Brand}-{o.Year}");
 
+            context.BrandSentimentVsTime.RemoveRange(context.BrandSentimentVsTime);
             context.BrandSentimentVsTime.AddRange(items);
             context.SaveChanges();
         }
@@ -479,6 +482,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => $"{o.Name}-{o.Brand}");
 
+            context.ProductSentiment.RemoveRange(context.ProductSentiment);
             context.ProductSentiment.AddRange(items);
             context.SaveChanges();
         }
@@ -507,6 +511,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => $"{o.Category}-{o.Month}");
 
+            context.CategoryDemand.RemoveRange(context.CategoryDemand);
             context.CategoryDemand.AddRange(items);
             context.SaveChangesAsync();
 
@@ -562,6 +567,7 @@ namespace CustomerSentiment.Spark
                 },
                 o => $"{o.Brand}-{o.Month}");
 
+            context.BrandDemand.RemoveRange(context.BrandDemand);
             context.BrandDemand.AddRange(items);
             context.SaveChanges();
 
