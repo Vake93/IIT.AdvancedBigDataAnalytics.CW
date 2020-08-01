@@ -33,7 +33,9 @@ namespace CustomerSentiment.SentimentModelBuilder
 
             var experiment = mlContext.Auto().CreateBinaryClassificationExperiment(experimentSettings);
 
-            var preFeaturizer = mlContext.Transforms.Text.FeaturizeText("FeaturizeText", "text")
+            var preFeaturizer = mlContext.Transforms.Text.TokenizeIntoWords("words", "text")
+                .Append(mlContext.Transforms.Text.RemoveDefaultStopWords("CleanText", "words"))
+                .Append(mlContext.Transforms.Text.FeaturizeText("FeaturizeText", "CleanText"))
                 .Append(mlContext.Transforms.NormalizeMinMax("Features", "FeaturizeText"));
 
             var experimentResult = experiment.Execute(
