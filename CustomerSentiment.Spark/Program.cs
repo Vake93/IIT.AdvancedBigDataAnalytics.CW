@@ -91,8 +91,6 @@ namespace CustomerSentiment.Spark
                 new StructField("description", new StringType()),
                 new StructField("image", new ArrayType(new StringType())),
                 new StructField("date", new StringType()),
-                new StructField("also_buy", new ArrayType(new StringType())),
-                new StructField("also_view", new ArrayType(new StringType())),
                 new StructField("rank", new StringType()),
             });
 
