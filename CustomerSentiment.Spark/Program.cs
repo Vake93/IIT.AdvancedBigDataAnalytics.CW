@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.Spark.Sql.Functions;
+using CustomerSentimentContextOptions = Microsoft.EntityFrameworkCore.DbContextOptions<CustomerSentiment.Spark.CustomerSentimentContext>;
 
 namespace CustomerSentiment.Spark
 {
@@ -18,14 +19,22 @@ namespace CustomerSentiment.Spark
         const string _reviewsPath = @"hdfs://localhost:9000/data/Electronics_Reviews.json";
         const string _connectionString = "Server=localhost;Database=customer-sentiment-db;User Id=postgres;Password=postgres;Application Name=CustomerSentiment;";
 
-        private static readonly MLContext _mlContext = new MLContext();
-        private static readonly ITransformer _mlModel = _mlContext
-            .Model
-            .Load(_sentimentModelFile, out var _);
+        private static readonly MLContext _mlContext;
+        private static readonly ITransformer _mlModel;
+        private static readonly CustomerSentimentContextOptions _contextOptions;
 
-        private static readonly DbContextOptions<CustomerSentimentContext> _contextOptions = new DbContextOptionsBuilder<CustomerSentimentContext>()
+        static Program()
+        {
+            _mlContext = new MLContext();
+
+            _mlModel = _mlContext
+                .Model
+                .Load(_sentimentModelFile, out var _);
+
+            _contextOptions = new DbContextOptionsBuilder<CustomerSentimentContext>()
                 .UseNpgsql(_connectionString)
                 .Options;
+        }
 
         static void Main()
         {
@@ -260,7 +269,7 @@ namespace CustomerSentiment.Spark
 
         private static void AnalyseCategorySentiment(SparkSession spark, CustomerSentimentContext context)
         {
-            Console.WriteLine("Analyzing category consumer sentiment");
+            Console.WriteLine("Analyzing category sentiment");
 
             var itemCategorySentiment = spark.Sql(
                 "SELECT EM.main_cat, SUM(ERS.sentiment) / COUNT(1) * 100 as sentiment_rank, COUNT(1) review_count " +
